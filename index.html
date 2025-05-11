@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upload Gambar - Cool Style</title>
+  <style>
+    /* Background and body style */
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #37474F;
+      color: #03A9F4;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    /* Glowing effect to titles and text */
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 2rem;
+      text-shadow:
+        0 0 5px #03A9F4,
+        0 0 10px #03A9F4,
+        0 0 20px #03A9F4,
+        0 0 40px #03A9F4;
+    }
+
+    /* Container for file input and button */
+    .upload-container {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    /* File input style - hidden real input, custom label */
+    input[type="file"] {
+      display: none;
+    }
+
+    label[for="imgfile"] {
+      display: inline-block;
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #03A9F4;
+      background: rgba(3, 169, 244, 0.15);
+      border: 2px solid #03A9F4;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow:
+        0 0 5px #03A9F4,
+        0 0 10px #03A9F4;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    label[for="imgfile"]:hover {
+      background: rgba(3, 169, 244, 0.4);
+      box-shadow:
+        0 0 10px #03A9F4,
+        0 0 20px #03A9F4,
+        0 0 40px #03A9F4;
+    }
+
+    /* Upload button styling */
+    button {
+      padding: 12px 35px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #222;
+      background: #03A9F4;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      text-shadow: none;
+      box-shadow:
+        0 0 10px #03A9F4,
+        0 0 20px #03A9F4;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    button:hover, button:focus {
+      background: #0288D1;
+      box-shadow:
+        0 0 15px #03A9F4,
+        0 0 30px #03A9F4,
+        0 0 60px #03A9F4;
+      outline: none;
+    }
+
+    /* Result container styling */
+    #imgresult {
+      margin-top: 1.5rem;
+      color: #03A9F4;
+      font-weight: 600;
+      word-break: break-word;
+      text-shadow:
+        0 0 5px #03A9F4,
+        0 0 10px #03A9F4;
+    }
+
+    #imgresult a {
+      color: #03A9F4;
+      text-decoration: none;
+      font-weight: 700;
+      text-shadow:
+        0 0 4px #03A9F4;
+    }
+    #imgresult a:hover {
+      text-decoration: underline;
+    }
+
+    #imgresult img.uploaded {
+      margin-top: 1rem;
+      border-radius: 12px;
+      box-shadow:
+        0 0 15px #03A9F4;
+      max-width: 90vw;
+      height: auto;
+      border: 2px solid #03A9F4;
+    }
+
+    /* Preview container styling for selected file */
+    #preview {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    #preview img {
+      width: 300px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow:
+        0 0 10px #03A9F4;
+      border: 2px solid #03A9F4;
+      max-width: 90vw;
+      object-fit: contain;
+    }
+
+    /* Responsive - ensure it fits on mobile with no scroll */
+    @media (max-width: 400px) {
+      .upload-container {
+        flex-direction: column;
+      }
+      label[for="imgfile"], button {
+        width: 100%;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload Gambar</h1>
+  <div class="upload-container">
+    <input type="file" id="imgfile" accept="image/*" />
+      <div id="preview"></div>
+    <label for="imgfile">Pilih File</label>
+    <button onclick="uploadImage()">Upload</button>
+  </div>
+
+  <!-- Preview container for selected file -->
+  <div id="preview"></div>
+
+  <div id="imgresult"></div>
+
+  <script>
+    const fileInput = document.getElementById('imgfile');
+    const previewContainer = document.getElementById('preview');
+
+    // Show preview when file selected
+    fileInput.addEventListener('change', () => {
+      previewContainer.innerHTML = ''; // Clear previous preview
+
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+
+        // Only image files
+        if (!file.type.startsWith('image/')) {
+          previewContainer.textContent = 'File bukan gambar';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = 'Preview gambar';
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    async function uploadImage() {
+      if (!fileInput.files.length) {
+        alert('Pilih file dulu ya!');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      try {
+        const res = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to upload file');
+        }
+
+        const data = await res.json();
+
+       const uploadedUrl = data.url;
+
+document.getElementById('imgresult').innerHTML = `
+  <p style="color:#E53935; display: flex; align-items: center; gap: 10px; justify-content: center; flex-wrap: wrap;">
+    URL: <a href="${uploadedUrl}" target="_blank" rel="noopener noreferrer">${uploadedUrl}</a>
+    <button id="copyBtn" style="
+      background: #E53935;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 0 8px #E53935;
+      transition: background-color 0.3s ease;
+    ">Copy</button>
+  </p>
+`;
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(uploadedUrl)
+    .then(() => alert('URL berhasil disalin!'))
+    .catch(() => alert('Gagal menyalin URL'));
+});
+
+      } catch (error) {
+        alert('Upload gagal: ' + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
